@@ -19,8 +19,8 @@ function App() {
   return (
     <Routes>
       <Route path="/home" element={<RequireAuth><Home /></RequireAuth>} />
-      <Route index element={<Register />} />
-      <Route path="/login" element={<Login />} />
+      <Route index path="/register" element={<Register />} />
+      <Route index element={<Login />} />
       <Route path="/article" element={<RequireAuth><Article /></RequireAuth>} />
     </Routes>
   );

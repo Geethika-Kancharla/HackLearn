@@ -8,6 +8,7 @@ import {
     onAuthStateChanged,
     signOut
 } from 'firebase/auth'
+import { getFirestore, collection, addDoc, doc, setDoc } from 'firebase/firestore'
 
 const FirebaseContext = createContext(null);
 
@@ -24,6 +25,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const firebaseAuth = getAuth(firebaseApp);
 const googleProvider = new GoogleAuthProvider();
+const firestore = getFirestore(firebaseApp);
 
 export const useFirebase = () => {
     const firebase = useContext(FirebaseContext);
@@ -46,12 +48,36 @@ export const FirebaseProvider = (props) => {
         })
     }, [])
 
-    const signupUserWithEmailAndPassword = (email, password) => {
-        return createUserWithEmailAndPassword(firebaseAuth, email, password);
-    }
+
+
+    const addUser = (email, password, name, role, phno) => {
+        createUserWithEmailAndPassword(firebaseAuth, email, password)
+            .then((userCredential) => {
+                // Signed up 
+                const loggedInuser = userCredential.user;
+                const user = {
+                    name,
+                    email,
+                    role,
+                    phno
+                };
+                const userDocRef = doc(firestore, 'users', loggedInuser.uid);
+
+                setDoc(userDocRef, user)
+                    .then(() => {
+                        console.log('User document created with UID: ', loggedInuser.uid);
+                    })
+                    .catch((error) => {
+                        console.error('Error creating user document: ', error);
+                    });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
 
     const signinUserWithEmailAndPassword = (email, password) => {
-        return signInWithEmailAndPassword(firebaseAuth, email, password);
+        signInWithEmailAndPassword(firebaseAuth, email, password);
     }
 
     const signinWithGoogle = () => {
@@ -70,7 +96,7 @@ export const FirebaseProvider = (props) => {
 
     return (
         <FirebaseContext.Provider value={{
-            signupUserWithEmailAndPassword,
+            addUser,
             signinUserWithEmailAndPassword,
             signinWithGoogle,
             isLoggedIn,
