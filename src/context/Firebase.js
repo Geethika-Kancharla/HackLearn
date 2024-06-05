@@ -8,9 +8,8 @@ import {
     onAuthStateChanged,
     signOut,
     sendPasswordResetEmail,
-    sendEmailVerification
 } from 'firebase/auth'
-import { getFirestore, collection, addDoc, doc, setDoc } from 'firebase/firestore'
+import { getFirestore, collection, query, where, getDocs, addDoc, doc, setDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 
 const FirebaseContext = createContext(null);
 
@@ -27,7 +26,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 export const firebaseAuth = getAuth(firebaseApp);
 const googleProvider = new GoogleAuthProvider();
-const firestore = getFirestore(firebaseApp);
+export const firestore = getFirestore(firebaseApp);
 
 export const useFirebase = () => {
     const firebase = useContext(FirebaseContext);
@@ -40,6 +39,7 @@ export const useFirebase = () => {
 export const FirebaseProvider = (props) => {
 
     const [user, setUser] = useState(null);
+    const [currUser, setCurrUser] = useState();
 
     useEffect(() => {
         onAuthStateChanged(firebaseAuth, user => {
@@ -49,17 +49,16 @@ export const FirebaseProvider = (props) => {
                 setUser(null);
         })
     }, [])
+    // console.log(currUser);
 
     const addUser = (email, password, name, role, phno) => {
         createUserWithEmailAndPassword(firebaseAuth, email, password)
             .then((userCredential) => {
-                // Signed up 
                 const loggedInuser = userCredential.user;
                 const user = {
                     name,
-                    email,
                     role,
-                    phno
+                    userId: loggedInuser.uid
                 };
                 const userDocRef = doc(firestore, 'users', loggedInuser.uid);
 
@@ -76,6 +75,58 @@ export const FirebaseProvider = (props) => {
             });
     };
 
+
+    const handleMessage = async (message) => {
+
+        const messageDetail = {
+            name: currUser?.name,
+            role: currUser?.role,
+            message,
+            timeStamp: serverTimestamp(),
+            userId: user.uid
+        };
+        const randomId = Math.random().toString(36).substring(2, 15); // Example random ID generation
+        const messageDocRef = doc(firestore, 'messages', randomId);
+
+        setDoc(messageDocRef, messageDetail)
+            .then(() => {
+                console.log('User document created with UID: ', randomId);
+            })
+            .catch((error) => {
+                console.error('Error creating user document: ', error);
+            });
+
+            
+
+
+        // const docRef = await addDoc(collection(firestore, "messages"), {
+        //     message,
+        //     Timestamp: serverTimestamp(),
+        //     userId: user.uid
+        // });
+        // console.log("Document written with ID: ", docRef.id);
+    }
+
+
+
+
+    const getData = async () => {
+        try {
+            const q = query(collection(firestore, "users"), where("userId", "==", user.uid));
+            const querySnapshot = await getDocs(q);
+            const userDoc = querySnapshot.docs[0]; // Assuming there's only one document for the user
+
+            if (userDoc.exists) {
+                setCurrUser(userDoc.data()); // Set current user data
+            } else {
+                console.log("No user document found");
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    };
+
+
     const signinUserWithEmailAndPassword = (email, password) => {
         signInWithEmailAndPassword(firebaseAuth, email, password);
     }
@@ -90,7 +141,7 @@ export const FirebaseProvider = (props) => {
 
     const handleLogout = async () => {
         try {
-            await signOut(firebaseAuth); // Sign out the user using Firebase's signOut method
+            await signOut(firebaseAuth);
         } catch (error) {
             console.error('Error occurred during logout:', error);
         }
@@ -105,7 +156,12 @@ export const FirebaseProvider = (props) => {
             signinWithGoogle,
             isLoggedIn,
             handleLogout,
-            sendPReset
+            sendPReset,
+            user,
+            handleMessage,
+            getData,
+            currUser
+
         }
         }>
             {props.children}

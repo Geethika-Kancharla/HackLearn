@@ -5,6 +5,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import { useFirebase } from "./context/Firebase";
 import Article from "./pages/Article";
+import Chat from "./pages/Chat";
+import Card from "./components/Card";
 
 function App() {
 
@@ -22,6 +24,10 @@ function App() {
       <Route index path="/register" element={<Register />} />
       <Route index element={<Login />} />
       <Route path="/article" element={<RequireAuth><Article /></RequireAuth>} />
+      <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />
+      <Route path="/card" element={<RequireAuth><Card /></RequireAuth>} />
+
+
     </Routes>
   );
 }
