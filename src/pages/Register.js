@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useFirebase } from '../context/Firebase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Register = () => {
 
@@ -37,6 +37,7 @@ const Register = () => {
                 <input type='email' placeholder='Enter the email' value={email} onChange={(e) => setEmail(e.target.value)} className='border border-black rounded-sm w-fit p-2'></input>
                 <input type='password' placeholder='Enter the password' value={password} onChange={(e) => setPassword(e.target.value)} className='border border-black rounded-sm w-fit p-2'></input>
                 <button className='bg-green-500 p-2 rounded-md' type='submit'>Sign Up</button>
+                <p>Already have an account<Link to="/"> Click here to login</Link></p>
             </div>
         </form>
     )

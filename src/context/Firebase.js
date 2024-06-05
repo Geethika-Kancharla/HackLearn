@@ -6,7 +6,9 @@ import {
     GoogleAuthProvider,
     signInWithPopup,
     onAuthStateChanged,
-    signOut
+    signOut,
+    sendPasswordResetEmail,
+    sendEmailVerification
 } from 'firebase/auth'
 import { getFirestore, collection, addDoc, doc, setDoc } from 'firebase/firestore'
 
@@ -23,7 +25,7 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-const firebaseAuth = getAuth(firebaseApp);
+export const firebaseAuth = getAuth(firebaseApp);
 const googleProvider = new GoogleAuthProvider();
 const firestore = getFirestore(firebaseApp);
 
@@ -47,8 +49,6 @@ export const FirebaseProvider = (props) => {
                 setUser(null);
         })
     }, [])
-
-
 
     const addUser = (email, password, name, role, phno) => {
         createUserWithEmailAndPassword(firebaseAuth, email, password)
@@ -84,6 +84,10 @@ export const FirebaseProvider = (props) => {
         signInWithPopup(firebaseAuth, googleProvider);
     }
 
+    const sendPReset = (email) => {
+        sendPasswordResetEmail(firebaseAuth, email);
+    }
+
     const handleLogout = async () => {
         try {
             await signOut(firebaseAuth); // Sign out the user using Firebase's signOut method
@@ -100,7 +104,8 @@ export const FirebaseProvider = (props) => {
             signinUserWithEmailAndPassword,
             signinWithGoogle,
             isLoggedIn,
-            handleLogout
+            handleLogout,
+            sendPReset
         }
         }>
             {props.children}
