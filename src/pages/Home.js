@@ -10,15 +10,15 @@ const Home = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            await firebase.getData();
+      try {
+        await firebase.getData();
 
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
     fetchData();
-}, []);
+  }, []);
 
 
   return (
@@ -31,6 +31,8 @@ const Home = () => {
       <Link to="/admin">Admin</Link>
       <Link to="/card">Card</Link>
       <Link to="/chat">Chat</Link>
+      <Link to="/voice">Voice</Link>
+
 
     </>
   )
