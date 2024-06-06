@@ -96,7 +96,7 @@ export const FirebaseProvider = (props) => {
                 console.error('Error creating user document: ', error);
             });
 
-            
+
 
 
         // const docRef = await addDoc(collection(firestore, "messages"), {
