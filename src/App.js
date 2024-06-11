@@ -8,6 +8,7 @@ import Article from "./pages/Article";
 import Chat from "./pages/Chat";
 import Card from "./components/Card";
 import Voice from "./pages/Voice";
+import Details from "./pages/Details";
 
 function App() {
 
@@ -28,7 +29,7 @@ function App() {
       <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />
       <Route path="/card" element={<RequireAuth><Card /></RequireAuth>} />
       <Route path="/voice" element={<RequireAuth><Voice /></RequireAuth>} />
-
+      <Route path="/details" element={<RequireAuth><Details /></RequireAuth>} />
 
     </Routes>
   );

@@ -32,6 +32,8 @@ const Home = () => {
       <Link to="/card">Card</Link>
       <Link to="/chat">Chat</Link>
       <Link to="/voice">Voice</Link>
+      <Link to="/details">Details</Link>
+
 
       <div className='w-12 h-12 rounded-full relative flex items-center justify-center bg-blue-700 shadow-md cursor-pointer'>
         <p className='text-white text-lg'>{firebase.user?.email[0].toUpperCase()}</p>

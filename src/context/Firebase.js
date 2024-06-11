@@ -9,7 +9,7 @@ import {
     signOut,
     sendPasswordResetEmail,
 } from 'firebase/auth'
-import { getFirestore, collection, query, where, getDocs, addDoc, doc, setDoc, serverTimestamp, Timestamp } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const FirebaseContext = createContext(null);
 
@@ -126,6 +126,14 @@ export const FirebaseProvider = (props) => {
         }
     };
 
+    const handleCreateNewListing = (pname, quantity, ingredients, coverPic) => {
+
+        
+
+
+
+    }
+
 
     const signinUserWithEmailAndPassword = (email, password) => {
         signInWithEmailAndPassword(firebaseAuth, email, password);
@@ -160,8 +168,8 @@ export const FirebaseProvider = (props) => {
             user,
             handleMessage,
             getData,
-            currUser
-
+            currUser,
+            handleCreateNewListing
         }
         }>
             {props.children}
