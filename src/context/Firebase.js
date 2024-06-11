@@ -9,7 +9,8 @@ import {
     signOut,
     sendPasswordResetEmail,
 } from 'firebase/auth'
-import { getFirestore, collection, query, where, getDocs, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, doc, setDoc, serverTimestamp, addDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes } from 'firebase/storage'
 
 const FirebaseContext = createContext(null);
 
@@ -27,6 +28,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 export const firebaseAuth = getAuth(firebaseApp);
 const googleProvider = new GoogleAuthProvider();
 export const firestore = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
 
 export const useFirebase = () => {
     const firebase = useContext(FirebaseContext);
@@ -97,8 +99,6 @@ export const FirebaseProvider = (props) => {
             });
 
 
-
-
         // const docRef = await addDoc(collection(firestore, "messages"), {
         //     message,
         //     Timestamp: serverTimestamp(),
@@ -106,8 +106,6 @@ export const FirebaseProvider = (props) => {
         // });
         // console.log("Document written with ID: ", docRef.id);
     }
-
-
 
 
     const getData = async () => {
@@ -126,14 +124,19 @@ export const FirebaseProvider = (props) => {
         }
     };
 
-    const handleCreateNewListing = (pname, quantity, ingredients, coverPic) => {
+    const handleCreateNewListing = async (pname, quantity, ingredients, coverPic) => {
 
-        
-
-
-
+        const imageRef = ref(storage, `uploads/images/${Date.now()}-{coverPic.name}`)
+        const uploadResult = await uploadBytes(imageRef, coverPic);
+        return await addDoc(collection(firestore, 'items'), {
+            pname,
+            ingredients,
+            quantity,
+            imageURL: uploadResult.ref.fullPath,
+            userId: user.uid,
+            userEmail: user.email
+        })
     }
-
 
     const signinUserWithEmailAndPassword = (email, password) => {
         signInWithEmailAndPassword(firebaseAuth, email, password);

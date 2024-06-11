@@ -23,7 +23,7 @@ const Details = () => {
                 <input type='text' placeholder='Enter the Product name' value={pname} onChange={(e) => setPname(e.target.value)} className='border border-black rounded-sm w-fit p-2'></input>
                 <input type='text' placeholder='Enter the quantity' value={quantity} onChange={(e) => setQuantity(e.target.value)} className='border border-black rounded-sm w-fit p-2'></input>
                 <input type='text' placeholder='Enter the ingredients' value={ingredients} onChange={(e) => setIngredients(e.target.value)} className='border border-black rounded-sm w-fit p-2'></input>
-                <input type='file' placeholder='Enter the cover pic' value={coverPic} onChange={(e) => setCoverPic(e.target.files[0])} className='border border-black rounded-sm w-fit p-2'></input>
+                <input type='file' placeholder='Enter the cover pic' onChange={(e) => setCoverPic(e.target.files[0])} className='border border-black rounded-sm w-fit p-2'></input>
                 <button className='bg-green-500 p-2 rounded-md' type='submit'>Submit</button>
             </div>
         </form>
