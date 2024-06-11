@@ -33,6 +33,7 @@ const Home = () => {
       <Link to="/chat">Chat</Link>
       <Link to="/voice">Voice</Link>
       <Link to="/details">Details</Link>
+      <Link to="/display">Display</Link>
 
 
       <div className='w-12 h-12 rounded-full relative flex items-center justify-center bg-blue-700 shadow-md cursor-pointer'>

@@ -10,7 +10,7 @@ import {
     sendPasswordResetEmail,
 } from 'firebase/auth'
 import { getFirestore, collection, query, where, getDocs, doc, setDoc, serverTimestamp, addDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes } from 'firebase/storage'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 const FirebaseContext = createContext(null);
 
@@ -138,6 +138,14 @@ export const FirebaseProvider = (props) => {
         })
     }
 
+    const getImageURL = (path) => {
+        return getDownloadURL(ref(storage, path));
+    }
+
+    const listAllItems = () => {
+        return getDocs(collection(firestore, 'items'));
+    }
+
     const signinUserWithEmailAndPassword = (email, password) => {
         signInWithEmailAndPassword(firebaseAuth, email, password);
     }
@@ -172,7 +180,9 @@ export const FirebaseProvider = (props) => {
             handleMessage,
             getData,
             currUser,
-            handleCreateNewListing
+            handleCreateNewListing,
+            listAllItems,
+            getImageURL
         }
         }>
             {props.children}
