@@ -9,7 +9,7 @@ import {
     signOut,
     sendPasswordResetEmail,
 } from 'firebase/auth'
-import { getFirestore, collection, query, where, getDocs, doc, setDoc, serverTimestamp, addDoc } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, doc, deleteDoc, setDoc, serverTimestamp, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 const FirebaseContext = createContext(null);
@@ -97,25 +97,16 @@ export const FirebaseProvider = (props) => {
             .catch((error) => {
                 console.error('Error creating user document: ', error);
             });
-
-
-        // const docRef = await addDoc(collection(firestore, "messages"), {
-        //     message,
-        //     Timestamp: serverTimestamp(),
-        //     userId: user.uid
-        // });
-        // console.log("Document written with ID: ", docRef.id);
     }
-
 
     const getData = async () => {
         try {
             const q = query(collection(firestore, "users"), where("userId", "==", user.uid));
             const querySnapshot = await getDocs(q);
-            const userDoc = querySnapshot.docs[0]; // Assuming there's only one document for the user
+            const userDoc = querySnapshot.docs[0];
 
             if (userDoc.exists) {
-                setCurrUser(userDoc.data()); // Set current user data
+                setCurrUser(userDoc.data());
             } else {
                 console.log("No user document found");
             }
@@ -125,25 +116,61 @@ export const FirebaseProvider = (props) => {
     };
 
     const handleCreateNewListing = async (pname, quantity, ingredients, coverPic) => {
-
-        const imageRef = ref(storage, `uploads/images/${Date.now()}-{coverPic.name}`)
+        
+        const imageRef = ref(storage, `uploads/images/${Date.now()}-${coverPic.name}`)
         const uploadResult = await uploadBytes(imageRef, coverPic);
-        return await addDoc(collection(firestore, 'items'), {
+        const randomId = Math.random().toString(36).substring(2, 15);
+        const messageDetail = {
             pname,
             ingredients,
             quantity,
             imageURL: uploadResult.ref.fullPath,
             userId: user.uid,
-            userEmail: user.email
-        })
+            userEmail: user.email,
+            id: randomId
+        };
+        const messageDocRef = doc(firestore, 'items', randomId);
+        return await setDoc(messageDocRef, messageDetail)
+            .then(() => {
+                console.log('User document created with UID: ', randomId);
+            })
+            .catch((error) => {
+                console.error('Error creating user document: ', error);
+            });
     }
 
     const getImageURL = (path) => {
         return getDownloadURL(ref(storage, path));
     }
 
-    const listAllItems = () => {
-        return getDocs(collection(firestore, 'items'));
+    const listAllItems = async () => {
+
+        if (user) {
+            try {
+                const qr = query(
+                    collection(firestore, "items"),
+                    where("userId", "==", user.uid)
+                );
+                const querySnap = await getDocs(qr);
+                const fetchedItems = [];
+                querySnap.forEach((doc) => {
+                    fetchedItems.push(doc);
+                });
+                return fetchedItems;
+            } catch (error) {
+                console.error("Error fetching item data:", error);
+                return [];
+            }
+        } else {
+            console.log("User is null in listAllItems");
+            return [];
+        }
+
+    };
+
+
+    const deleteItem = async (id) => {
+        await deleteDoc(doc(firestore, "items", id));
     }
 
     const signinUserWithEmailAndPassword = (email, password) => {
@@ -182,7 +209,8 @@ export const FirebaseProvider = (props) => {
             currUser,
             handleCreateNewListing,
             listAllItems,
-            getImageURL
+            getImageURL,
+            deleteItem
         }
         }>
             {props.children}

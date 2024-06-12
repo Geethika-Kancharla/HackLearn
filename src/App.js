@@ -11,6 +11,7 @@ import Voice from "./pages/Voice";
 import Details from "./pages/Details";
 import Display from "./pages/Display";
 
+
 function App() {
 
   const firebase = useFirebase();
