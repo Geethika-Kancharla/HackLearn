@@ -116,7 +116,7 @@ export const FirebaseProvider = (props) => {
     };
 
     const handleCreateNewListing = async (pname, quantity, ingredients, coverPic) => {
-        
+
         const imageRef = ref(storage, `uploads/images/${Date.now()}-${coverPic.name}`)
         const uploadResult = await uploadBytes(imageRef, coverPic);
         const randomId = Math.random().toString(36).substring(2, 15);
