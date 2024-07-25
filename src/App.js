@@ -32,7 +32,13 @@ function App() {
       <Route path="/card" element={<RequireAuth><Card /></RequireAuth>} />
       <Route path="/voice" element={<RequireAuth><Voice /></RequireAuth>} />
       <Route path="/details" element={<RequireAuth><Details /></RequireAuth>} />
-      <Route path="/display" element={<RequireAuth><Display /></RequireAuth>} />
+      {/* Route can be accessed only by admin role  */}
+      <Route path="/display" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <Display />
+        </ProtectedRoute>
+      }
+      />
 
     </Routes>
   );
