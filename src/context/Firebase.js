@@ -42,16 +42,24 @@ export const FirebaseProvider = (props) => {
 
     const [user, setUser] = useState(null);
     const [currUser, setCurrUser] = useState();
+    const [role, setRole] = useState(null);
 
     useEffect(() => {
-        onAuthStateChanged(firebaseAuth, user => {
-            if (user)
-                setUser(user);
-            else
+        onAuthStateChanged(firebaseAuth, async (user) => {
+            if (user) {
+                const userDocRef = doc(firestore, 'users', user.uid);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    setUser(user);
+                    setRole(userData.role);
+                }
+            } else {
                 setUser(null);
+                setRole(null);
+            }
         })
     }, [])
-    // console.log(currUser);
 
     const addUser = (email, password, name, role, phno) => {
         createUserWithEmailAndPassword(firebaseAuth, email, password)
@@ -59,7 +67,7 @@ export const FirebaseProvider = (props) => {
                 const loggedInuser = userCredential.user;
                 const user = {
                     name,
-                    role,
+                    role: "rusers",
                     userId: loggedInuser.uid
                 };
                 const userDocRef = doc(firestore, 'users', loggedInuser.uid);
@@ -204,6 +212,7 @@ export const FirebaseProvider = (props) => {
             handleLogout,
             sendPReset,
             user,
+            role,
             handleMessage,
             getData,
             currUser,
