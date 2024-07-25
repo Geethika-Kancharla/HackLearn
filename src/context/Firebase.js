@@ -61,7 +61,7 @@ export const FirebaseProvider = (props) => {
         })
     }, [])
 
-    const addUser = (email, password, name, role, phno) => {
+    const addUser = (email, password, name, phno) => {
         createUserWithEmailAndPassword(firebaseAuth, email, password)
             .then((userCredential) => {
                 const loggedInuser = userCredential.user;
